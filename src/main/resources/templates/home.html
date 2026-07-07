@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>PINTO AI</title>
+</head>
+
+<body>
+
+	<h1>PINTO AI</h1>
+
+	<p>
+		AI Business Assistant 開発中
+	</p>
+
+
+	<form method="post">
+
+		<input type="text" name="question" placeholder="質問を入力してください">
+
+		<button type="submit">
+			送信
+		</button>
+
+	</form>
+
+
+	<div th:if="${question}">
+
+		<h2>あなたの質問</h2>
+
+		<p th:text="${question}"></p>
+
+	</div>
+	
+	<div th:if="${answer}">
+
+	    <h2>PINTO AIの回答</h2>
+
+	    <p th:text="${answer}"></p>
+
+	</div>
+
+
+</body>
+
+</html>
