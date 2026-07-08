@@ -18,17 +18,19 @@ public class HomeController {
 	}
 
 	@GetMapping("/")
-	public String home() {
+	public String home(Model model) {
+
+		model.addAttribute("messages", chatService.getMessages());
+
 		return "home";
 	}
 
 	@PostMapping("/")
 	public String chat(@RequestParam("question") String question, Model model) {
 
-		String answer = chatService.getAnswer(question);
+		chatService.chat(question);
 
-		model.addAttribute("question", question);
-		model.addAttribute("answer", answer);
+		model.addAttribute("messages", chatService.getMessages());
 
 		return "home";
 	}
