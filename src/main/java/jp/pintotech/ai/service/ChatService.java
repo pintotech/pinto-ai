@@ -1,34 +1,42 @@
 package jp.pintotech.ai.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import jp.pintotech.ai.model.Message;
+import jp.pintotech.ai.repository.MessageRepository;
 
 @Service
 public class ChatService {
 
-	private final List<Message> messages = new ArrayList<>();
+    private final MessageRepository messageRepository;
 
-	public void chat(String question) {
+    public ChatService(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
 
-		// ユーザーの発言を追加
-		messages.add(new Message("user", question));
+    public void chat(String question) {
 
-		// 仮のAI回答
-		String answer = "AI接続前です。\nあなたの質問は「" + question + "」でした。";
+        // ユーザーの発言を保存
+        Message userMessage = new Message("user", question);
+        messageRepository.save(userMessage);
 
-		//AI回答（OpenAI使用時）
-		//String answer = chatClient.prompt(question).call().content();
+        // 仮のAI回答
+        String answer = "AI接続前です。\nあなたの質問は「"
+                + question
+                + "」でした。";
 
-		// AIの回答を追加
-		messages.add(new Message("assistant", answer));
-	}
+        // OpenAI接続時はこちらに置き換え
+        // String answer = chatClient.prompt(question).call().content();
 
-	public List<Message> getMessages() {
-		return messages;
-	}
+        // AIの回答を保存
+        Message aiMessage = new Message("assistant", answer);
+        messageRepository.save(aiMessage);
+    }
+
+    public List<Message> getMessages() {
+        return messageRepository.findAll();
+    }
 
 }
