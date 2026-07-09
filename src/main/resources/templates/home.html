@@ -14,32 +14,38 @@
 <body>
 
 	<div class="container">
+
 		<header>
 			<h1>🐶 PINTO AI</h1>
 			<p>Business Assistant</p>
 		</header>
 
-		<main>
-			<div class="chat">
-				<div th:each="message : ${messages}" th:class="${message.role == 'user'} ? 'question' : 'answer'">
+		<div class="chat">
 
-					<h3 th:text="${message.role == 'user'} ? 'あなた' : 'PINTO AI'"></h3>
+			<div th:each="message : ${messages}" th:class="'message ' + ${message.role}">
 
-					<p class="time" th:text="${#temporals.format(message.createdAt, 'HH:mm')}"></p>
+				<h3 th:text="${message.role == 'user'} ? 'あなた' : 'PINTO AI'"></h3>
 
-					<p th:text="${message.content}"></p>
-				</div>
+				<p class="time" th:text="${#temporals.format(message.createdAt,'HH:mm')}"></p>
+
+				<p th:text="${message.content}"></p>
+
 			</div>
-			<form method="post">
 
-				<input type="text" name="question" placeholder="メッセージを入力してください">
+		</div>
 
-				<button type="submit">
-					送信
-				</button>
-			</form>
-		</main>
+		<form method="post">
+
+			<input type="text" name="question" placeholder="メッセージを入力してください">
+
+			<button type="submit">
+				送信
+			</button>
+
+		</form>
+
 	</div>
+
 </body>
 
 </html>
