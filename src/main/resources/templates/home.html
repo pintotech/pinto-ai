@@ -24,7 +24,9 @@
 
 			<div th:each="message : ${messages}" th:class="'message ' + ${message.role}">
 
-				<h3 th:text="${message.role == 'user'} ? 'あなた' : 'PINTO AI'"></h3>
+				<h3>
+					<span th:text="${message.role == 'user'} ? '👤 あなた' : '🐶 PINTO AI'"></span>
+				</h3>
 
 				<p class="time" th:text="${#temporals.format(message.createdAt,'HH:mm')}"></p>
 
