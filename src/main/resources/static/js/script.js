@@ -23,7 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ボタン送信
     if (form) {
-        form.addEventListener("submit", (event) => {
+        form.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
 
             const question = input.value.trim();
 
@@ -39,6 +41,32 @@ document.addEventListener("DOMContentLoaded", () => {
             // 二重送信防止
             submitButton.disabled = true;
             submitButton.textContent = "送信中...";
+			
+			appendMessage("user", question);
+			
+			input.value = "";
+			input.focus();
+
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    question: question
+                })
+            });
+
+            const data = await response.json();
+			
+			appendMessage("assistant", data.content);
+			
+			submitButton.disabled = false;
+			submitButton.textContent = "送信";
+			
+			scrollToBottom();
+
+            console.log(data);
 
         });
     }
@@ -80,5 +108,53 @@ function scrollToBottom() {
         });
 
     });
+
+}
+
+async function testApi() {
+
+    console.log("① testApi開始");
+
+    const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            question: "テスト"
+        })
+    });
+
+    console.log("② fetch完了");
+
+    const data = await response.json();
+
+    console.log("③ JSON取得");
+
+    console.log(data);
+
+}
+
+/**
+ * メッセージを画面へ追加
+ */
+function appendMessage(role, content) {
+
+    const chat = document.getElementById("chat");
+
+    const message = document.createElement("div");
+
+    message.className = `message ${role}`;
+
+    const title = role === "user"
+        ? "あなた"
+        : "PINTO AI";
+
+    message.innerHTML = `
+        <h3>${title}</h3>
+        <p>${content}</p>
+    `;
+
+    chat.appendChild(message);
 
 }
