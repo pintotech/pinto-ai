@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const input = document.querySelector("input[name='question']");
     const form = document.querySelector("form");
+    const input = document.querySelector("input[name='question']");
+    const chat = document.getElementById("chat");
     const submitButton = form.querySelector("button");
 
     // 初期フォーカス
-    if (input) {
-        input.focus();
-    }
+    focusInput();
 
     // Enter送信
     if (input && form) {
@@ -22,7 +21,82 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ボタン送信
-    if (form) {
+    setupSubmitEvent();
+
+    /**
+     * Enterキー送信用
+     */
+    function submitForm() {
+
+        form.requestSubmit();
+
+    }
+
+    /**
+     * チャットを一番下までスクロールする
+     */
+    function scrollToBottom() {
+
+        requestAnimationFrame(() => {
+
+            chat.scrollTo({
+                top: chat.scrollHeight,
+                behavior: "smooth"
+            });
+
+        });
+
+    }
+
+    /**
+     * AIへメッセージを送信
+     */
+    async function sendMessage(question) {
+
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                question: question
+            })
+        });
+
+        return response.json();
+
+    }
+
+    /**
+     * メッセージを画面へ追加
+     */
+    function appendMessage(role, content) {
+
+        const message = document.createElement("div");
+
+        message.className = `message ${role}`;
+
+        const title = role === "user"
+            ? "あなた"
+            : "PINTO AI";
+
+        message.innerHTML = `
+        <h3>${title}</h3>
+        <p>${content}</p>
+    `;
+
+        chat.appendChild(message);
+
+    }
+
+    function focusInput() {
+
+        input.focus();
+
+    }
+
+    function setupSubmitEvent() {
+
         form.addEventListener("submit", async (event) => {
 
             event.preventDefault();
@@ -30,131 +104,46 @@ document.addEventListener("DOMContentLoaded", () => {
             const question = input.value.trim();
 
             if (question === "") {
-                event.preventDefault();
-                input.focus();
+                focusInput();
                 return;
             }
 
-            // trim後の文字列をセット
             input.value = question;
 
-            // 二重送信防止
             submitButton.disabled = true;
             submitButton.textContent = "送信中...";
-			
-			appendMessage("user", question);
-			
-			input.value = "";
-			input.focus();
 
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    question: question
-                })
-            });
+            appendMessage("user", question);
 
-            const data = await response.json();
-			
-			appendMessage("assistant", data.content);
-			
-			submitButton.disabled = false;
-			submitButton.textContent = "送信";
-			
-			scrollToBottom();
+            input.value = "";
 
-            console.log(data);
+            focusInput();
+
+            try {
+
+                const data = await sendMessage(question);
+
+                appendMessage("assistant", data.content);
+
+            } catch (error) {
+
+                console.error(error);
+
+                appendMessage(
+                    "assistant",
+                    "通信エラーが発生しました。時間をおいてもう一度お試しください。"
+                );
+
+            } finally {
+
+                submitButton.disabled = false;
+                submitButton.textContent = "送信";
+
+            }
+
+            scrollToBottom();
 
         });
+
     }
-
-    // 初回表示時に一番下へスクロール
-    scrollToBottom();
-
 });
-
-/**
- * Enterキー送信用
- */
-function submitForm() {
-
-    const form = document.querySelector("form");
-
-    if (form) {
-        form.requestSubmit();
-    }
-
-}
-
-/**
- * チャットを一番下までスクロールする
- */
-function scrollToBottom() {
-
-    const chat = document.querySelector(".chat");
-
-    if (!chat) {
-        return;
-    }
-
-    requestAnimationFrame(() => {
-
-        chat.scrollTo({
-            top: chat.scrollHeight,
-            behavior: "smooth"
-        });
-
-    });
-
-}
-
-async function testApi() {
-
-    console.log("① testApi開始");
-
-    const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            question: "テスト"
-        })
-    });
-
-    console.log("② fetch完了");
-
-    const data = await response.json();
-
-    console.log("③ JSON取得");
-
-    console.log(data);
-
-}
-
-/**
- * メッセージを画面へ追加
- */
-function appendMessage(role, content) {
-
-    const chat = document.getElementById("chat");
-
-    const message = document.createElement("div");
-
-    message.className = `message ${role}`;
-
-    const title = role === "user"
-        ? "あなた"
-        : "PINTO AI";
-
-    message.innerHTML = `
-        <h3>${title}</h3>
-        <p>${content}</p>
-    `;
-
-    chat.appendChild(message);
-
-}

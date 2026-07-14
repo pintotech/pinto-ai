@@ -36,7 +36,7 @@ public class ChatService {
 	}
 
 	public List<Message> getMessages() {
-		return messageRepository.findAll();
+	    return messageRepository.findAllByOrderByCreatedAtAsc();
 	}
 
 }
