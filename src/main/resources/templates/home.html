@@ -15,36 +15,71 @@
 
 	<div class="container">
 
-		<header>
-			<h1>🐶 PINTO AI</h1>
-			<p>Business Assistant</p>
-		</header>
+		<!-- サイドバー -->
+		<aside class="sidebar">
 
-		<div class="chat" id="chat">
+			<div class="sidebar-header">
 
-			<div th:each="message : ${messages}" th:class="'message ' + ${message.role}">
+				<h2>🐶 PINTO AI</h2>
 
-				<h3>
-					<span th:text="${message.role == 'user'} ? '👤 あなた' : '🐶 PINTO AI'"></span>
-				</h3>
-
-				<p class="time" th:text="${#temporals.format(message.createdAt,'HH:mm')}"></p>
-
-				<p th:text="${message.content}"></p>
+				<button id="newChatButton" class="new-chat">
+					＋ 新しいチャット
+				</button>
 
 			</div>
 
-		</div>
+			<div class="history">
 
-		<form method="post">
+			    <div
+			        class="history-item"
+			        th:each="conversation : ${conversations}"
+			        th:text="${conversation.title}">
+			    </div>
 
-			<input type="text" name="question" placeholder="メッセージを入力してください">
+			</div>
 
-			<button type="submit">
-				送信
-			</button>
+		</aside>
 
-		</form>
+		<!-- メイン -->
+		<main class="main-content">
+
+			<header>
+
+				<h1>🐶 PINTO AI</h1>
+
+				<p>Business Assistant</p>
+
+			</header>
+
+			<div class="chat" id="chat">
+
+				<div th:each="message : ${messages}" th:class="'message ' + ${message.role}">
+
+					<h3>
+						<span th:text="${message.role == 'user'} ? '👤 あなた' : '🐶 PINTO AI'">
+						</span>
+					</h3>
+
+					<p class="time" th:text="${#temporals.format(message.createdAt,'HH:mm')}">
+					</p>
+
+					<p th:text="${message.content}"></p>
+
+				</div>
+
+			</div>
+
+			<form method="post">
+
+				<input type="text" name="question" placeholder="メッセージを入力してください">
+
+				<button type="submit">
+					送信
+				</button>
+
+			</form>
+
+		</main>
 
 	</div>
 

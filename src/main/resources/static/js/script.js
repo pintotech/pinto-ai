@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ボタン送信
     setupSubmitEvent();
+	
+	// 新しいチャット
+	setupNewChatButton();
 
     /**
      * Enterキー送信用
@@ -146,4 +149,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     }
+	
+	/**
+	 * 新しいチャット
+	 */
+	function setupNewChatButton() {
+
+	    const button = document.getElementById("newChatButton");
+
+	    button.addEventListener("click", () => {
+
+	        chat.innerHTML = "";
+
+	        focusInput();
+
+	    });
+
+	}
 });
